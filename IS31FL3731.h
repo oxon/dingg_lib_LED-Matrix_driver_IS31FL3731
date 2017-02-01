@@ -13,7 +13,7 @@
  *          (Auto Frame Play Mode).
  * 
  * \note:   The IS31FL3731 is very critical when it comes to high temperatures.
- *          Do not exceed 260°C (for > 30s) in the production process
+ *          Do not exceed 260°C (for > 30s) in the production process.
  *
  * @{
  -----------------------------------------------------------------------------*/
@@ -25,8 +25,8 @@
 /* Includes --------------------------------------------------- */
 #include <Arduino.h>
 #include <Wire.h>
-//#include <LEDMatrix.h>
-#include <Adafruit_GFX.h>
+#include <LEDMatrix.h>
+//#include <Adafruit_GFX.h>
 
 /* Typedefs ----------------------------------------------------*/
 
@@ -38,13 +38,13 @@
 /* Defines -----------------------------------------------------*/
 
 /* Class ------------------------------------------------------ */
-//class IS31FL3731
-class IS31FL3731 : public Adafruit_GFX
+class IS31FL3731 : public LEDMatrix
+//class IS31FL3731 : public Adafruit_GFX
 {
 public:
   /* constructor(s) & deconstructor */
-  //IS31FL3731(TwoWire& ISSIWire, uint8_t x = 9, uint8_t y = 16) : ISSIWire_(ISSIWire), x_(x), y_(y) {};
-  IS31FL3731(TwoWire& ISSIWire, uint16_t x = 9, uint16_t y = 16) : ISSIWire_(ISSIWire), Adafruit_GFX(x, y) {};
+  IS31FL3731(TwoWire& ISSIWire, uint8_t x = 9, uint8_t y = 16) : ISSIWire_(ISSIWire), LEDMatrix(x, y) {};
+  //IS31FL3731(TwoWire& ISSIWire, uint16_t x = 9, uint16_t y = 16) : ISSIWire_(ISSIWire), Adafruit_GFX(x, y) {};
   ~IS31FL3731() {};
 
   /* public constants (static) */
@@ -66,8 +66,9 @@ public:
   void setFrame(frame frameNr);
   void setMode(mode modeNr);
   void setDisplayOptions(bool intensityControl, bool blinkEnable, uint8_t blinkPeriodTime);  // in ms
-  //void drawPixel(uint8_t x, uint8_t y, uint8_t brigtness);
-  void drawPixel(int16_t x, int16_t y, uint16_t color);
+  void drawPixel(uint8_t x, uint8_t y, uint8_t brigtness);
+  //void drawPixel(int16_t x, int16_t y, uint16_t color);
+  uint8_t getPixel(uint8_t x, uint8_t y);
   void clear();
   
   // Picture Mode methods:
@@ -89,17 +90,9 @@ public:
   void setAudioADCRate(uint8_t rate);
   void setAGCControl(bool mode, bool enable, uint8_t gain);
 
-/* 
- * Note:
- * Frame Registers can only be read in software shutdown mode as SDB pin is high.
- * The Function Register can be read in software shutdown mode or operating mode.
- */
-
 private:
   /* attributes */
   TwoWire& ISSIWire_;
-  uint8_t x_;
-  uint8_t y_;
 
   /* private constants (static) */
   static const uint8_t DEFAULT_I2C_ADDR         = 0x74;  // AD connected to GND, 0x75 (VCC), 0x76 (SCL), 0x77 (SDA)

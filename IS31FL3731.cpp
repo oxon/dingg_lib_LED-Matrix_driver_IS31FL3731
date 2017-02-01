@@ -5,14 +5,18 @@
  * @{
  -----------------------------------------------------------------------------*/
 
- /* Includes --------------------------------------------------- */
-#include "IS31FL3731.h"
-
 /*
+ * Note:
+ * Frame Registers can only be read in software shutdown (SDB HIGH).
+ * The Function Register can be read in both modes.
+ *
  * Recommended workflow:
  * Power on -> enableHW() -> configure register -> enableSW() -> display something ->
  * disableSW() (matrix blanked) -> read and/or clear register -> disableHW()
  */
+
+ /* Includes --------------------------------------------------- */
+#include "IS31FL3731.h"
 
 /* Public ----------------------------------------------------- */
 void IS31FL3731::begin(volatile uint8_t *enPort, uint8_t enPin, uint8_t i2cAddr)
@@ -119,37 +123,46 @@ void IS31FL3731::setDisplayOptions(bool intensityControl, bool blinkEnable, uint
   writeRegister(REG_DISPLAY_OPTION, displayOption);
 }
 
-// void IS31FL3731::drawPixel(uint8_t x, uint8_t y, uint8_t brigtness)
-// {
-//   if ((x >= x_) || (y >= y_)) return;
-
-//   selectFrame(frame_);
-//   writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, brigtness);
-// }
-
-void IS31FL3731::drawPixel(int16_t x, int16_t y, uint16_t color)
+void IS31FL3731::drawPixel(uint8_t x, uint8_t y, uint8_t brigtness)
 {
-  switch (getRotation()) {
-  case 1:
-    _swap_int16_t(x, y);
-    x = 16 - x - 1;
-    break;
-  case 2:
-    x = 16 - x - 1;
-    y = 9 - y - 1;
-    break;
-  case 3:
-    _swap_int16_t(x, y);
-    y = 9 - y - 1;
-    break;
-  }
-
   if ((x >= x_) || (y >= y_)) return;
-  if (color > 255) color = 255;
 
   selectFrame(frame_);
-  writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, color);
-  return;
+  writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, brigtness);
+}
+
+// void IS31FL3731::drawPixel(int16_t x, int16_t y, uint16_t color)
+// {
+//   switch (getRotation()) {
+//   case 1:
+//     _swap_int16_t(x, y);
+//     x = 16 - x - 1;
+//     break;
+//   case 2:
+//     x = 16 - x - 1;
+//     y = 9 - y - 1;
+//     break;
+//   case 3:
+//     _swap_int16_t(x, y);
+//     y = 9 - y - 1;
+//     break;
+//   }
+
+//   if ((x >= x_) || (y >= y_)) return;
+//   if (color > 255) color = 255;
+
+//   selectFrame(frame_);
+//   writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, color);
+//   return;
+// }
+
+uint8_t IS31FL3731::getPixel(uint8_t x, uint8_t y)
+{
+  disableSW();
+  selectFrame(frame_);
+  uint8_t brigtness = readRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS);
+  enableSW();
+  return brigtness;
 }
 
 void IS31FL3731::clear()
@@ -284,3 +297,7 @@ void IS31FL3731::writeRegister(uint8_t address, uint8_t value)
   ISSIWire_.write(value);
   ISSIWire_.endTransmission();
 }
+
+/**
+ * @}
+ */
