@@ -19,11 +19,9 @@
 #include "IS31FL3731.h"
 
 /* Public ----------------------------------------------------- */
-void IS31FL3731::begin(volatile uint8_t *enPort, uint8_t enPin, uint8_t i2cAddr)
+void IS31FL3731::begin(uint8_t i2cAddr)
 {
   i2cAddr_ = i2cAddr;
-  enPort_ = enPort;
-  enPin_ = enPin;
 
   ISSIWire_.begin();
 
@@ -92,6 +90,7 @@ void IS31FL3731::enableSW()
 void IS31FL3731::disableHW()
 {
   clear();
+  delay(10);
   disableSW();
   *enPort_ &= ~(1 << enPin_);         // HW shutdown (disable r/w)
 }

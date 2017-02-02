@@ -43,8 +43,8 @@ class IS31FL3731 : public LEDMatrix
 {
 public:
   /* constructor(s) & deconstructor */
-  IS31FL3731(TwoWire& ISSIWire, uint8_t x = 9, uint8_t y = 16) : ISSIWire_(ISSIWire), LEDMatrix(x, y) {};
-  //IS31FL3731(TwoWire& ISSIWire, uint16_t x = 9, uint16_t y = 16) : ISSIWire_(ISSIWire), Adafruit_GFX(x, y) {};
+  IS31FL3731(TwoWire& ISSIWire, volatile uint8_t *enPort, uint8_t enPin, uint8_t x = 9, uint8_t y = 16) : 
+    ISSIWire_(ISSIWire), enPort_(enPort), enPin_(enPin), LEDMatrix(x, y) {};
   ~IS31FL3731() {};
 
   /* public constants (static) */
@@ -57,7 +57,7 @@ public:
   enum numberOfFrames : uint8_t {ALL_FRAMES = 0, ONE_FRAME = 1, TWO_FRAMES = 2, THREE_FRAMES = 3, FOUR_FRAMES = 4, FIVE_FRAMES = 5, SIX_FRAMES = 6, SEVEN_FRAMES = 7};
 
   /* public methods */
-  void begin(volatile uint8_t *enPort, uint8_t enPin, uint8_t i2cAddr = DEFAULT_I2C_ADDR);  //Example: Matrix.begin(&PORTB, 3);
+  void begin(uint8_t i2cAddr = DEFAULT_I2C_ADDR);
   void end();
   void enableHW();
   void enableSW();
@@ -93,6 +93,8 @@ public:
 private:
   /* attributes */
   TwoWire& ISSIWire_;
+  volatile uint8_t *enPort_;
+  uint8_t enPin_;
 
   /* private constants (static) */
   static const uint8_t DEFAULT_I2C_ADDR         = 0x74;  // AD connected to GND, 0x75 (VCC), 0x76 (SCL), 0x77 (SDA)
@@ -133,8 +135,6 @@ private:
 
   /* private variables */
   uint8_t i2cAddr_;
-  volatile uint8_t *enPort_;
-  uint8_t enPin_;
   frame frame_;
 
   /* private methods */
