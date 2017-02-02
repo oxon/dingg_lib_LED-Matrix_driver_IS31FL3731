@@ -26,7 +26,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <LEDMatrix.h>
-//#include <Adafruit_GFX.h>
 
 /* Typedefs ----------------------------------------------------*/
 
@@ -39,7 +38,6 @@
 
 /* Class ------------------------------------------------------ */
 class IS31FL3731 : public LEDMatrix
-//class IS31FL3731 : public Adafruit_GFX
 {
 public:
   /* constructor(s) & deconstructor */
@@ -52,7 +50,7 @@ public:
 
   /* public enumerations */
   enum mode : uint8_t {PICTURE_MODE = 0, AUTO_FRAME_PLAY_MODE = 1, AUDIO_FRAME_PLAY_MODE = 2};
-  enum frame : uint8_t {FRAME1 = 0, FRAME2 = 1, FRAME3 = 2, FRAME4 = 3, FRAME5 = 4, FRAME6 = 5, FRAME7 = 6, FRAME8 = 7, FUNCTION_REGISTERS = 8};
+  enum frame : uint8_t {FRAME1 = 0x00, FRAME2 = 0x01, FRAME3 = 0x02, FRAME4 = 0x03, FRAME5 = 0x04, FRAME6 = 0x05, FRAME7 = 0x06, FRAME8 = 0x07, FUNCTION_REGISTERS = 0x0B};
   enum numberOfLoops : uint8_t {ENDLESS = 0, LOOP1 = 1, LOOP2 = 2, LOOP3 = 3, LOOP4 = 4, LOOP5 = 5, LOOP6 = 6, LOOP7 = 7};
   enum numberOfFrames : uint8_t {ALL_FRAMES = 0, ONE_FRAME = 1, TWO_FRAMES = 2, THREE_FRAMES = 3, FOUR_FRAMES = 4, FIVE_FRAMES = 5, SIX_FRAMES = 6, SEVEN_FRAMES = 7};
 
@@ -67,7 +65,6 @@ public:
   void setMode(mode modeNr);
   void setDisplayOptions(bool intensityControl, bool blinkEnable, uint8_t blinkPeriodTime);  // in ms
   void drawPixel(uint8_t x, uint8_t y, uint8_t brigtness);
-  //void drawPixel(int16_t x, int16_t y, uint16_t color);
   uint8_t getPixel(uint8_t x, uint8_t y);
   void clear();
   
@@ -112,7 +109,7 @@ private:
   static const uint8_t REG_PWM_START            = 0x24;  // 0x24... 0xB3
   static const uint8_t REG_PWM_END              = 0xB3;
 
-  // Function Registers: (before writing or to a Function Register, you have to select "frame nine" -> FUNCTION_REGISTERS)
+  // Function Registers: (before writing to a Function Register, you have to select "frame nine" -> FUNCTION_REGISTERS: 0x0B = 11)
   static const uint8_t REG_CONF                 = 0x00;
   static const uint8_t REG_PICTURE_DISPLAY      = 0x01;
   static const uint8_t REG_CONTROL_AUTO_PLAY1   = 0x02;

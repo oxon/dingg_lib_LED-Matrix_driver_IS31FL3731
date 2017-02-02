@@ -7,7 +7,7 @@
 
 /*
  * Note:
- * Frame Registers can only be read in software shutdown (SDB HIGH).
+ * Frame 1... 8 Registers can only be read in software shutdown (SDB HIGH).
  * The Function Register can be read in both modes.
  *
  * Recommended workflow:
@@ -130,31 +130,6 @@ void IS31FL3731::drawPixel(uint8_t x, uint8_t y, uint8_t brigtness)
   writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, brigtness);
 }
 
-// void IS31FL3731::drawPixel(int16_t x, int16_t y, uint16_t color)
-// {
-//   switch (getRotation()) {
-//   case 1:
-//     _swap_int16_t(x, y);
-//     x = 16 - x - 1;
-//     break;
-//   case 2:
-//     x = 16 - x - 1;
-//     y = 9 - y - 1;
-//     break;
-//   case 3:
-//     _swap_int16_t(x, y);
-//     y = 9 - y - 1;
-//     break;
-//   }
-
-//   if ((x >= x_) || (y >= y_)) return;
-//   if (color > 255) color = 255;
-
-//   selectFrame(frame_);
-//   writeRegister(REG_PWM_START + x + y*MAX_NUMBER_OF_COLUMNS, color);
-//   return;
-// }
-
 uint8_t IS31FL3731::getPixel(uint8_t x, uint8_t y)
 {
   disableSW();
@@ -267,8 +242,6 @@ void IS31FL3731::setAGCControl(bool mode, bool enable, uint8_t gain)
 /* Private ---------------------------------------------------- */
 void IS31FL3731::selectFrame(frame frameNr)
 {
-  // Serial.print("selectFrame = "); Serial.println(frameNr);
-
   ISSIWire_.beginTransmission(i2cAddr_);
   ISSIWire_.write(REG_CMD);
   ISSIWire_.write(frameNr);
@@ -289,8 +262,6 @@ uint8_t IS31FL3731::readRegister(uint8_t address)
 
 void IS31FL3731::writeRegister(uint8_t address, uint8_t value)
 {
-  // Serial.print("writeRegister 0x"); Serial.print(address, HEX);
-  // Serial.print(" = "); Serial.println(value, HEX);
   ISSIWire_.beginTransmission(i2cAddr_);
   ISSIWire_.write(address);
   ISSIWire_.write(value);
