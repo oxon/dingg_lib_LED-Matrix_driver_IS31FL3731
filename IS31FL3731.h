@@ -11,7 +11,7 @@
  *          It consists of 8 frames that you can prepare beforehand and display
  *          with either the displayFrame()-function (Picture Mode) or in a loop
  *          (Auto Frame Play Mode).
- * 
+ *
  * \note:   The IS31FL3731 is very critical when it comes to high temperatures.
  *          Do not exceed 260°C (for > 30s) in the production process.
  *
@@ -41,7 +41,7 @@ class IS31FL3731 : public LEDMatrix
 {
 public:
   /* constructor(s) & deconstructor */
-  IS31FL3731(TwoWire& ISSIWire, volatile uint8_t *enPort, uint8_t enPin, uint8_t x = 9, uint8_t y = 16) : 
+  IS31FL3731(TwoWire& ISSIWire, volatile uint8_t *enPort, uint8_t enPin, uint8_t x = 9, uint8_t y = 16) :
     ISSIWire_(ISSIWire), enPort_(enPort), enPin_(enPin), LEDMatrix(x, y) {};
   ~IS31FL3731() {};
 
@@ -67,14 +67,15 @@ public:
   void drawPixel(uint8_t x, uint8_t y, uint8_t brigtness);
   uint8_t getPixel(uint8_t x, uint8_t y);
   void clear();
-  
+  void fillScreen(uint8_t brightness);
+
   // Picture Mode methods:
   void displayFrame(frame frameNr);
   void setFadeOutTime(uint16_t time);  // in ms
   void setFadeInTime(uint16_t time);   // in ms
   void setBreathControl(bool enable, uint8_t extinguishTime);
   void setAudioSync(bool enable);
-  
+
   // Auto Frame Play Mode methods:
   void setStartFrame(frame frameNr);
   void setNumberOfLoops(numberOfLoops loop);
@@ -82,7 +83,7 @@ public:
   void setDelayBetweenFrames(uint16_t delay);  // in ms
   bool getMovieFinished();
   uint8_t getCurrentFrameDisplay();
-  
+
   // Audio Frame Play Mode methods:
   void setAudioADCRate(uint8_t rate);
   void setAGCControl(bool mode, bool enable, uint8_t gain);

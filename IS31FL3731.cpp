@@ -27,8 +27,8 @@ void IS31FL3731::begin(uint8_t i2cAddr)
 
   enableHW();
 
-  /* init all LEDs of all frames */  
-  for (uint8_t f = FRAME1; f <= FRAME8; f++) 
+  /* init all LEDs of all frames */
+  for (uint8_t f = FRAME1; f <= FRAME8; f++)
   {
     selectFrame(f);
 
@@ -58,7 +58,7 @@ void IS31FL3731::begin(uint8_t i2cAddr)
 
     // All PWM dc = 0
     for (uint8_t i = REG_PWM_START; i <= REG_PWM_END; i += 0x01) writeRegister(i, 0x00);
-  }  
+  }
 
   /* init */
   setMode(PICTURE_MODE);
@@ -141,14 +141,18 @@ uint8_t IS31FL3731::getPixel(uint8_t x, uint8_t y)
 
 void IS31FL3731::clear()
 {
+  fillScreen(0);
+}
+
+
+void IS31FL3731::fillScreen(uint8_t brightness)  {
   selectFrame(frame_);
 
-  /* clear row wise (since all 144 at once didn't work) */
   for (uint8_t y = 0; y < MAX_NUMBER_OF_ROWS; y++)
   {
     ISSIWire_.beginTransmission(i2cAddr_);
     ISSIWire_.write(REG_PWM_START + y*MAX_NUMBER_OF_COLUMNS);
-    for (uint8_t x = 0; x < MAX_NUMBER_OF_COLUMNS; x++) ISSIWire_.write(0x00);  // write 0 for each LED
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_COLUMNS; x++) ISSIWire_.write(brightness);  // write 0 for each LED
     ISSIWire_.endTransmission();
   }
 }
