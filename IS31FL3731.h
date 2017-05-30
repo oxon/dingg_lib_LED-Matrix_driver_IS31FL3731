@@ -42,7 +42,7 @@ class IS31FL3731 : public LEDMatrix
 public:
   /* constructor(s) & deconstructor */
   IS31FL3731(TwoWire& ISSIWire, volatile uint8_t *enPort, uint8_t enPin, uint8_t x = 9, uint8_t y = 16) :
-    ISSIWire_(ISSIWire), enPort_(enPort), enPin_(enPin), LEDMatrix(x, y) {};
+    LEDMatrix(x, y), ISSIWire_(ISSIWire), enPort_(enPort), enPin_(enPin) {};
   ~IS31FL3731() {};
 
   /* public constants (static) */

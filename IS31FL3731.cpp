@@ -30,7 +30,7 @@ void IS31FL3731::begin(uint8_t i2cAddr)
   /* init all LEDs of all frames */
   for (uint8_t f = FRAME1; f <= FRAME8; f++)
   {
-    selectFrame(f);
+    selectFrame(frame(f));
 
     // //TODO: allow Variable LED-Matrix sizes
     // // LEDs of Matrix A
@@ -165,21 +165,21 @@ void IS31FL3731::displayFrame(frame frameNr)
   writeRegister(REG_PICTURE_DISPLAY, frameNr);
 }
 
-void IS31FL3731::setFadeOutTime(uint16_t time)  // in ms
-{
-  //TODO: FOT = 26ms * 2^time
-  //time /= TYP_FADE_OUT_TIME;
-  //selectFrame(FUNCTION_REGISTERS);
-  //writeRegister(REG_CONTROL_BREATH1, );
-}
+// void IS31FL3731::setFadeOutTime(uint16_t time)  // in ms
+// {
+//   //TODO: FOT = 26ms * 2^time
+//   //time /= TYP_FADE_OUT_TIME;
+//   //selectFrame(FUNCTION_REGISTERS);
+//   //writeRegister(REG_CONTROL_BREATH1, );
+// }
 
-void IS31FL3731::setFadeInTime(uint16_t time)  // in ms
-{
-  //TODO: FIT = 26ms * 2^time
-  //time /= TYP_FADE_IN_TIME;
-  //selectFrame(FUNCTION_REGISTERS);
-  //writeRegister(REG_CONTROL_BREATH1, );
-}
+// void IS31FL3731::setFadeInTime(uint16_t time)  // in ms
+// {
+//   //TODO: FIT = 26ms * 2^time
+//   //time /= TYP_FADE_IN_TIME;
+//   //selectFrame(FUNCTION_REGISTERS);
+//   //writeRegister(REG_CONTROL_BREATH1, );
+// }
 
 void IS31FL3731::setBreathControl(bool enable, uint8_t extinguishTime)
 {
