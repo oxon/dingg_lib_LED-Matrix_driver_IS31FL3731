@@ -55,7 +55,7 @@ public:
   enum numberOfFrames : uint8_t {ALL_FRAMES = 0, ONE_FRAME = 1, TWO_FRAMES = 2, THREE_FRAMES = 3, FOUR_FRAMES = 4, FIVE_FRAMES = 5, SIX_FRAMES = 6, SEVEN_FRAMES = 7};
 
   /* public methods */
-  void begin(uint8_t i2cAddr = DEFAULT_I2C_ADDR);
+  void begin(const uint32_t clockSpeed = 200000L, uint8_t i2cAddr = DEFAULT_I2C_ADDR);
   void end();
   void enableHW();
   void enableSW();

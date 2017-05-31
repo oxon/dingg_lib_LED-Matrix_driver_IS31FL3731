@@ -19,11 +19,12 @@
 #include "IS31FL3731.h"
 
 /* Public ----------------------------------------------------- */
-void IS31FL3731::begin(uint8_t i2cAddr)
+void IS31FL3731::begin(const uint32_t clockSpeed, uint8_t i2cAddr)
 {
   i2cAddr_ = i2cAddr;
 
   ISSIWire_.begin();
+  ISSIWire_.setClock(clockSpeed);
 
   enableHW();
 
@@ -32,7 +33,7 @@ void IS31FL3731::begin(uint8_t i2cAddr)
   {
     selectFrame(frame(f));
 
-    // //TODO: allow Variable LED-Matrix sizes
+    // //TODO: allow variable LED-Matrix sizes
     // // LEDs of Matrix A
     // for (uint8_t i = REG_CONTROL_LED_A_START; i <= REG_CONTROL_LED_A_END; i += 0x02)
     // {
@@ -53,11 +54,11 @@ void IS31FL3731::begin(uint8_t i2cAddr)
     // LEDs of Matrix B
     for (uint8_t i = REG_CONTROL_LED_B_START; i <= REG_CONTROL_LED_B_END; i += 0x02) writeRegister(i, 0x00); // Column 1... 9: off
 
-    // All Blink off
-    for (uint8_t i = REG_CONTROL_BLINK_START; i <= REG_CONTROL_BLINK_END; i += 0x01) writeRegister(i, 0x00);
+    // // All Blink off   //blup: commented to increase startup time
+    // for (uint8_t i = REG_CONTROL_BLINK_START; i <= REG_CONTROL_BLINK_END; i += 0x01) writeRegister(i, 0x00);
 
-    // All PWM dc = 0
-    for (uint8_t i = REG_PWM_START; i <= REG_PWM_END; i += 0x01) writeRegister(i, 0x00);
+    // // All PWM dc = 0  //blup: commented to increase startup time
+    // for (uint8_t i = REG_PWM_START; i <= REG_PWM_END; i += 0x01) writeRegister(i, 0x00);
   }
 
   /* init */
@@ -77,7 +78,7 @@ void IS31FL3731::end()
 void IS31FL3731::enableHW()
 {
   *enPort_ |= (1 << enPin_);          // HW enable (enable r/w)
-  delay(100);
+  //delay(10); // not necessary
   disableSW();
 }
 
@@ -144,15 +145,15 @@ void IS31FL3731::clear()
   fillScreen(0);
 }
 
-
-void IS31FL3731::fillScreen(uint8_t brightness)  {
+void IS31FL3731::fillScreen(uint8_t brightness)
+{
   selectFrame(frame_);
 
   for (uint8_t y = 0; y < MAX_NUMBER_OF_ROWS; y++)
   {
     ISSIWire_.beginTransmission(i2cAddr_);
     ISSIWire_.write(REG_PWM_START + y*MAX_NUMBER_OF_COLUMNS);
-    for (uint8_t x = 0; x < MAX_NUMBER_OF_COLUMNS; x++) ISSIWire_.write(brightness);  // write 0 for each LED
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_COLUMNS; x++) ISSIWire_.write(brightness);
     ISSIWire_.endTransmission();
   }
 }
