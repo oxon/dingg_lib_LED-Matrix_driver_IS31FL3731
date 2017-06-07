@@ -1,100 +1,130 @@
-/**-----------------------------------------------------------------------------
- * \file    IS31FL3731.h
- * \author  jh
- * \date    xx.01.2017
- *
- * \version 1.0
- *
- * \brief   The IS31FL3731 can drive a 16x9 (144) LED-Matrix.
- *          It is able to control the brightness of every LED individually by
- *          setting a 8-bit PWM duty cycle.
- *          It consists of 8 frames that you can prepare beforehand and display
- *          with either the displayFrame()-function (Picture Mode) or in a loop
- *          (Auto Frame Play Mode).
- *
- * \note:   The IS31FL3731 is very critical when it comes to high temperatures.
- *          Do not exceed 260°C (for > 30s) in the production process.
- *
- * @{
- -----------------------------------------------------------------------------*/
+#ifndef _IS31FL3731_H_
+#define _IS31Fl3731_H_
+/*******************************************************************************
+* \file    IS31FL3731.h
+********************************************************************************
+* \author  Jascha Haldemann jh@oxon.ch
+* \date    01.01.2017
+* \version 1.0
+*
+* \brief   The IS31FL3731 can drive a 16x9 (144) LED-Matrix.
+*
+* \section DESCRIPTION
+* The IS31FL3731 is able to control the brightness of every LED individually by
+* setting a 8-bit PWM duty cycle.
+* It consists of 8 frames that you can prepare beforehand and display
+* with either the displayFrame()-function (Picture Mode) or in a loop
+* (Auto Frame Play Mode).
+*
+* \note:   The IS31FL3731 is very critical when it comes to high temperatures.
+*          Do not exceed 260°C (for > 30s) in the production process.
+*
+********************************************************************************
+* LED-Matrix driver Library
+*******************************************************************************/
 
-/* Define to prevent recursive inclusion -----------------------*/
-#ifndef IS31FL3731_H_
-#define IS31Fl3731_H_
-
-/* Includes --------------------------------------------------- */
+/* ============================== Global imports ============================ */
 #include <Arduino.h>
 #include <Wire.h>
 #include <LEDMatrix.h>
 
-/* Typedefs ----------------------------------------------------*/
+/* ==================== Global module constant declaration ================== */
 
-/* Macros ----------------------------------------------------- */
+/* ========================= Global macro declaration ======================= */
 #ifndef _swap_int16_t
   #define _swap_int16_t(a, b) {int16_t temp = a; a = b; b = temp;}
 #endif
 
-/* Defines -----------------------------------------------------*/
-
-/* Class ------------------------------------------------------ */
+/* ============================ Class declaration =========================== */
 class IS31FL3731 : public LEDMatrix
 {
 public:
-  /* constructor(s) & deconstructor */
+  /* Public member typedefs */
+  typedef enum : uint8_t
+  {
+    PICTURE_MODE = 0,
+    AUTO_FRAME_PLAY_MODE = 1,
+    AUDIO_FRAME_PLAY_MODE = 2
+  } mode_t;
+
+  typedef enum : uint8_t
+  {
+    FRAME1 = 0x00,
+    FRAME2 = 0x01,
+    FRAME3 = 0x02,
+    FRAME4 = 0x03,
+    FRAME5 = 0x04,
+    FRAME6 = 0x05,
+    FRAME7 = 0x06,
+    FRAME8 = 0x07,
+    FUNCTION_REGISTERS = 0x0B
+  } frame_t;
+
+  typedef enum : uint8_t
+  {
+    ENDLESS = 0,
+    LOOP1 = 1,
+    LOOP2 = 2,
+    LOOP3 = 3,
+    LOOP4 = 4,
+    LOOP5 = 5,
+    LOOP6 = 6,
+    LOOP7 = 7
+  } numberOfLoops_t;
+
+  typedef enum : uint8_t
+  {
+    ALL_FRAMES = 0,
+    ONE_FRAME = 1,
+    TWO_FRAMES = 2,
+    THREE_FRAMES = 3,
+    FOUR_FRAMES = 4,
+    FIVE_FRAMES = 5,
+    SIX_FRAMES = 6,
+    SEVEN_FRAMES = 7
+  } numberOfFrames_t;
+
+  /* Constructor(s) and  Destructor */
   IS31FL3731(TwoWire& ISSIWire, volatile uint8_t *enPort, uint8_t enPin, uint8_t x = 9, uint8_t y = 16) :
     LEDMatrix(x, y), ISSIWire_(ISSIWire), enPort_(enPort), enPin_(enPin) {};
   ~IS31FL3731() {};
 
-  /* public constants (static) */
-  // ...
-
-  /* public enumerations */
-  enum mode : uint8_t {PICTURE_MODE = 0, AUTO_FRAME_PLAY_MODE = 1, AUDIO_FRAME_PLAY_MODE = 2};
-  enum frame : uint8_t {FRAME1 = 0x00, FRAME2 = 0x01, FRAME3 = 0x02, FRAME4 = 0x03, FRAME5 = 0x04, FRAME6 = 0x05, FRAME7 = 0x06, FRAME8 = 0x07, FUNCTION_REGISTERS = 0x0B};
-  enum numberOfLoops : uint8_t {ENDLESS = 0, LOOP1 = 1, LOOP2 = 2, LOOP3 = 3, LOOP4 = 4, LOOP5 = 5, LOOP6 = 6, LOOP7 = 7};
-  enum numberOfFrames : uint8_t {ALL_FRAMES = 0, ONE_FRAME = 1, TWO_FRAMES = 2, THREE_FRAMES = 3, FOUR_FRAMES = 4, FIVE_FRAMES = 5, SIX_FRAMES = 6, SEVEN_FRAMES = 7};
-
-  /* public methods */
+  /* Public member functions */
   void begin(const uint32_t clockSpeed = 200000L, uint8_t i2cAddr = DEFAULT_I2C_ADDR);
   void end();
   void enableHW();
   void enableSW();
   void disableHW();
   void disableSW();
-  void setFrame(frame frameNr);
-  void setMode(mode modeNr);
+  void setFrame(frame_t frameNr);
+  void setMode(mode_t modeNr);
   void setDisplayOptions(bool intensityControl, bool blinkEnable, uint8_t blinkPeriodTime);  // in ms
   void drawPixel(uint8_t x, uint8_t y, uint8_t brigtness);
   uint8_t getPixel(uint8_t x, uint8_t y);
   void clear();
   void fillScreen(uint8_t brightness);
 
-  // Picture Mode methods:
-  void displayFrame(frame frameNr);
+  // Picture Mode functions:
+  void displayFrame(frame_t frameNr);
   void setFadeOutTime(uint16_t time);  // in ms
   void setFadeInTime(uint16_t time);   // in ms
   void setBreathControl(bool enable, uint8_t extinguishTime);
   void setAudioSync(bool enable);
 
-  // Auto Frame Play Mode methods:
-  void setStartFrame(frame frameNr);
-  void setNumberOfLoops(numberOfLoops loop);
-  void setNumberOfFrames(numberOfFrames frame);
+  // Auto Frame Play Mode functions:
+  void setStartFrame(frame_t frameNr);
+  void setNumberOfLoops(numberOfLoops_t loop);
+  void setNumberOfFrames(numberOfFrames_t frame);
   void setDelayBetweenFrames(uint16_t delay);  // in ms
   bool getMovieFinished();
-  uint8_t getCurrentFrameDisplay();
+  frame_t getCurrentFrameDisplay();
 
-  // Audio Frame Play Mode methods:
+  // Audio Frame Play Mode functions:
   void setAudioADCRate(uint8_t rate);
   void setAGCControl(bool mode, bool enable, uint8_t gain);
 
 private:
-  /* attributes */
-  TwoWire& ISSIWire_;
-  volatile uint8_t *enPort_;
-  uint8_t enPin_;
-
-  /* private constants (static) */
+  /* Private constant declerations (static) */
   static const uint8_t DEFAULT_I2C_ADDR         = 0x74;  // AD connected to GND, 0x75 (VCC), 0x76 (SCL), 0x77 (SDA)
 
   // Command Register:
@@ -131,18 +161,17 @@ private:
   static const uint8_t MAX_NUMBER_OF_COLUMNS    = 16;
   static const uint8_t MAX_NUMBER_OF_ROWS       = 9;
 
-  /* private variables */
+  /* Private member data */
+  TwoWire& ISSIWire_;
+  volatile uint8_t *enPort_;
+  uint8_t enPin_;
   uint8_t i2cAddr_;
-  frame frame_;
+  frame_t frame_;
 
-  /* private methods */
-  void selectFrame(frame frameNr);
+  /* Private member functions */
+  void selectFrame(frame_t frameNr);
   uint8_t readRegister(uint8_t address);
   void writeRegister(uint8_t address, uint8_t value);
 };
 
 #endif
-
-/**
- * @}
- */
